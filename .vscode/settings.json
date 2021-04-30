@@ -1,0 +1,5 @@
+{
+  "files.eol": "\n",
+  // https://www.gitmemory.com/issue/vuejs/eslint-plugin-vue/1269/668921391
+  "vetur.validation.template": false
+}
