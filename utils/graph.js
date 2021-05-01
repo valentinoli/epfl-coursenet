@@ -32,10 +32,12 @@ export default class Graph {
   graphOpacityVoronoi
   graphOpacity
   nodeStrokeWidth = 1
+  collisionOffset
   nodeStroke = '#fff'
   linkStroke = '#111'
   arrowMarkerWidth = 10
   arrowMarkerId = 'arrowmarker'
+  arrowMarkerUrl
   lecturerPaths
   lecturerImageWidth
   lecturerImageHeight
@@ -50,6 +52,7 @@ export default class Graph {
     this.vue = vue
     this.graphOpacityVoronoi = vue.graphOpacityVoronoi
     this.graphOpacity = vue.graphOpacity
+    this.arrowMarkerUrl = `url(#${this.arrowMarkerId})`
 
     this.container = select('.svg-container')
 
@@ -62,6 +65,9 @@ export default class Graph {
       .call(this.zoomBehavior)
       // prevent dblclick zoom behavior
       .on('dblclick.zoom', null)
+      // to enable on touch interfaces to close the tooltip
+      // that opens when zoomNode() is called
+      .on('click', this.vue.hideTooltip)
 
     this.setSVGViewBox()
 
@@ -408,17 +414,11 @@ export default class Graph {
   }
 
   /* Collision detection */
-  nodeCollision({ source, target }) {
+  didNodesCollide({ source, target }) {
     // Checks the closeness of source and target, and returns a boolean
     // indicating whether the link should be visible
-    // const sourceRadius = this.computeNodeRadius(source)
-    // const targetRadius = this.computeNodeRadius(target)
     const { hypotenuse } = this.linkAngleHypotenuse(source, target)
-    const limit =
-      source.radius +
-      target.radius +
-      this.arrowMarkerWidth +
-      this.nodeStrokeWidth
+    const limit = source.radius + target.radius + this.collisionOffset
     return hypotenuse < limit
   }
 
@@ -449,29 +449,15 @@ export default class Graph {
   }
 
   /* Mouse events for nodes */
-  mouseenter(event, d, element) {
+  mouseenter(element, event, d) {
     this.mouseleft = false
 
     if (this.vue.touchInterface || !this.isDragging) {
-      // let position
-      // if (event) {
-      //   position = this.pointerPosition(event)
-      // } else {
-      //   // called from Vue component
-      //   const { left, top } = element.getBoundingClientRect()
-      //   position = [left, top]
-      // }
-
       // we always show the tooltip on touch interfaces
       // since dragstarted is called before mouseenter
       // in that case (at least in Chrome)
-      // const position = this.pointerPosition(event)
-      // console.log(position)
-      // this.vue.showTooltip(d, event)
       window.setTimeout(() => {
         if (!this.mouseleft) {
-          // create copy to guard against mutation errors caused by d3-force
-          // this.setSelectedNode(JSON.parse(JSON.stringify(d)))
           this.vue.setSelectedNode(
             this.vue.graphData.nodes.find((n) => n.slug === d.slug)
           )
@@ -488,7 +474,7 @@ export default class Graph {
     }
   }
 
-  mousemove(event, d, element) {
+  mousemove(element, event, d) {
     if (!this.vue.touchInterface && !this.isDragging) {
       // const position = this.pointerPosition(event)
       // console.log(position, event.clientX, event.clientY)
@@ -496,7 +482,7 @@ export default class Graph {
     }
   }
 
-  mouseleave(event, d, element) {
+  mouseleave(element, event, d) {
     this.mouseleft = true
 
     if (!this.isDragging) {
@@ -514,7 +500,7 @@ export default class Graph {
   }
 
   /* Drag events for nodes */
-  dragstarted(event, d, element) {
+  dragstarted(element, event, d) {
     this.isDragging = true
     if (!event.active) {
       // I don't know what this does, I just copied it
@@ -525,7 +511,7 @@ export default class Graph {
     d.fy = d.y
   }
 
-  dragged(event, d, element) {
+  dragged(element, event, d) {
     d.fx = event.x
     d.fy = event.y
     // Hide the info tooltip on drag
@@ -536,7 +522,7 @@ export default class Graph {
     // select(element).style('cursor', 'grabbing')
   }
 
-  dragended(event, d, element) {
+  dragended(element, event, d) {
     this.isDragging = false
     if (!event.active) {
       // I don't know what this does, I just copied it
@@ -695,23 +681,18 @@ export default class Graph {
       .attr('y1', this.linkY1.bind(this))
       .attr('x2', this.linkX2.bind(this))
       .attr('y2', this.linkY2.bind(this))
-      .attr('stroke', (d) => {
-        const collision = this.nodeCollision.bind(this)(d)
-        if (collision) {
-          return null
-        }
-
-        return this.linkStroke
-      })
+      .attr('stroke', this.linkStroke)
 
     if (this.vue.isDirectedGraph) {
-      this.link.style('marker-end', (d) => {
-        const collision = this.nodeCollision.bind(this)(d)
+      // only check collisions if graph is directed
+      this.link.style('marker-end', (d, i, group) => {
+        const collision = this.didNodesCollide(d)
         if (collision) {
+          // remove stroke of link on collision
+          select(group[i]).attr('stroke', null)
           return null
         }
-
-        return `url(#${this.arrowMarkerId})`
+        return this.arrowMarkerUrl
       })
     }
 
@@ -746,31 +727,25 @@ export default class Graph {
       .style('stroke-width', strokeWidth)
 
     if (this.vue.isDirectedGraph) {
-      this.link.style('marker-end', `url(#${this.arrowMarkerId})`)
-    }
-  }
-
-  onEvent(func) {
-    // Returns a generic event handler function for d3 events
-    // that calls a given handler function, and passes the `this` context
-    // as its last argument, which in d3 points to the DOM element.
-    // This allows `this` inside the class function to still refer to the class instance,
-    // while also having access to the DOM element.
-
-    // `self` refers to the class instance
-    const self = this
-    return function (event, d) {
-      // `this` in this scope refers to the DOM element
-      // corresponding to the event and data `d`.
-      // The class instance (self) will become the `this` in the new context
-      self[func](event, d, this)
+      this.link.style('marker-end', this.arrowMarkerUrl)
+    } else {
+      this.link.style('marker-end', null)
     }
   }
 
   func(func) {
+    // Returns a generic handler function for d3 callbacks,
+    // that when envoked calls a given handler function,
+    // and passes the `this` context
+    // as its first argument, which in d3 is usually the relevant DOM element.
+    // That way we allow `this` inside the class instance method
+    // to still refer to the class instance,
+    // while also having access to the DOM element.
     const self = this
-    return function (d) {
-      self[func](d, this)
+    return function (...args) {
+      // `this` in this scope refers to the corresponding DOM element
+      // The class instance (self) will become the `this` in the new context
+      self[func](this, ...args)
     }
   }
 
@@ -846,13 +821,13 @@ export default class Graph {
     this.node
       .call(
         drag()
-          .on('start', this.onEvent('dragstarted'))
-          .on('drag', this.onEvent('dragged'))
-          .on('end', this.onEvent('dragended'))
+          .on('start', this.func('dragstarted'))
+          .on('drag', this.func('dragged'))
+          .on('end', this.func('dragended'))
       )
-      .on('mouseenter', this.onEvent('mouseenter'))
-      .on('mousemove', this.onEvent('mousemove'))
-      .on('mouseleave', this.onEvent('mouseleave'))
+      .on('mouseenter', this.func('mouseenter'))
+      .on('mousemove', this.func('mousemove'))
+      .on('mouseleave', this.func('mouseleave'))
 
     if (!this.vue.touchInterface) {
       this.node.on('dblclick', (event, d) => {
@@ -940,6 +915,12 @@ export default class Graph {
     // + 2 to avoid division by zero in case
     // there is zero or one node since log(1) === 0
     this.initialScale = 2 / Math.log(nodes.length + 2)
+
+    this.collisionOffset = this.nodeStrokeWidth
+
+    if (this.vue.isDirectedGraph) {
+      this.collisionOffset += this.arrowMarkerWidth
+    }
 
     this.centerGraph()
   }
