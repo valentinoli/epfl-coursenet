@@ -26,8 +26,9 @@ export default {
   },
 
   loading: {
-    color: 'red',
-    height: '5px',
+    color: '#F44336',
+    failedColor: '#D50000',
+    height: '4px',
     duration: 1000,
     continuous: true,
   },
@@ -91,7 +92,7 @@ export default {
     icon: {},
     meta: {
       name,
-      theme_color: '#FF0000',
+      theme_color: '#ffffff',
       ogHost: host,
     },
     manifest: {
