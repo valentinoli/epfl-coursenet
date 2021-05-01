@@ -273,6 +273,7 @@ export default {
     },
     networkSearchOnChange(node) {
       // hide tooltip before mutating the state
+      this.networkSearch = false
       this.hideTooltip()
       this.setSelectedNode({ ...node, triggerZoom: true })
     },
