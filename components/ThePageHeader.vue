@@ -8,21 +8,26 @@
     </h1>
     <template v-if="isProgram">
       <h2>
-        <nuxt-link :to="{ params: { program: null } }">{{
+        <nuxt-link :to="{ params: { program: null }, query }">{{
           levelTitle
         }}</nuxt-link>
       </h2>
     </template>
     <template v-else-if="isSpecialization">
       <h2>
-        <nuxt-link :to="{ params: { specialization: null } }">{{
+        <nuxt-link :to="{ params: { specialization: null }, query }">{{
           programTitle
         }}</nuxt-link>
       </h2>
       <h3>
-        <nuxt-link :to="{ params: { program: null, specialization: null } }">{{
-          levelTitle
-        }}</nuxt-link>
+        <nuxt-link
+          :to="{
+            params: { program: null, specialization: null },
+            query,
+          }"
+        >
+          {{ levelTitle }}
+        </nuxt-link>
       </h3>
     </template>
   </div>
@@ -65,6 +70,9 @@ export default {
             fontSize: '0.7rem',
           }
         : {}
+    },
+    query() {
+      return this.$route.query
     },
   },
 }

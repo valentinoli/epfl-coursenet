@@ -67,7 +67,11 @@
               @click.stop.native -> avoids opening node when link clicked
             -->
             <nuxt-link
-              :to="{ name: 'level-program-specialization', params }"
+              :to="{
+                name: 'level-program-specialization',
+                params,
+                query: $route.query,
+              }"
               class="nav-link"
               @click.stop.native="drawer = false"
             >
