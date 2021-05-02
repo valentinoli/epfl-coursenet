@@ -13,6 +13,11 @@
       item-variant="square"
     />
     <legend-row
+      :items="neighborhoodItems"
+      subheading="Neighborhood"
+      item-variant="square"
+    />
+    <legend-row
       :items="nodeFillItems"
       heading="Nodes"
       :subheading="nodeFillItemsSubheading"

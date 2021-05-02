@@ -576,6 +576,10 @@ export default class Graph {
     if (d.sciper) {
       return cmap.bipartition.lecturers.color
     }
+    if (d.neighborhoodKey) {
+      // group neighborhood nodes together
+      return cmap.neighborhood[d.neighborhoodKey].color
+    }
     return this.vue.$nodeVoronoiColor(cmap, nodeGroup, d)
   }
 
@@ -610,14 +614,15 @@ export default class Graph {
 
     // Sort the nodes' coordinates into groups:
     const groupCounts = {}
-    this.node.each(({ x, y, [nodeGroup]: p }) => {
-      if (!(p in coords)) {
-        coords[p] = []
-        groupCounts[p] = 0
+    this.node.each(({ x, y, [nodeGroup]: p, neighborhoodKey }) => {
+      const key = neighborhoodKey || p
+      if (!(key in coords)) {
+        coords[key] = []
+        groupCounts[key] = 0
       }
 
-      groupCounts[p]++
-      coords[p].push({ x, y })
+      groupCounts[key]++
+      coords[key].push({ x, y })
     })
 
     // Compute the centroid of each group:
@@ -652,15 +657,16 @@ export default class Graph {
 
     // adjust each point if needed towards group centroid:
     this.node.each((d) => {
-      const { [nodeGroup]: p, x, y } = d
-      const { cx, cy } = centroids[p]
+      const { [nodeGroup]: p, neighborhoodKey, x, y } = d
+      const key = neighborhoodKey || p
+      const { cx, cy } = centroids[key]
       const dx = cx - x
       const dy = cy - y
 
       // distance from centroid
       const r = Math.sqrt(dx * dx + dy * dy)
 
-      if (r > dists[p]) {
+      if (r > dists[key]) {
         d.x = x * 0.9 + cx * 0.1
         d.y = y * 0.9 + cy * 0.1
       }
@@ -749,7 +755,7 @@ export default class Graph {
     }
   }
 
-  loadImg(d, imageEl) {
+  loadImg(imageEl, d) {
     const { sciper } = d
     if (!sciper) {
       imageEl.setAttribute('href', this.vue.$defaultProfileImg)
