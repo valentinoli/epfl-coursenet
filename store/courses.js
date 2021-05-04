@@ -5,14 +5,17 @@ export const state = () => ({
 export const mutations = {
   push({ courses }, course) {
     const { slug } = course
-    const existing = courses.find((c) => c.slug === slug)
-    if (!existing) {
-      // prepend new course
-      courses.splice(0, 0, course)
-      if (courses.length > 10) {
-        // remove last course if length exceeds the limit
-        courses.splice(courses.length - 1, 1)
-      }
+    const existingIdx = courses.findIndex((c) => c.slug === slug)
+    // prepend new course
+    courses.splice(0, 0, course)
+
+    if (existingIdx !== -1) {
+      // remove existing course from its old position
+      // idx + 1 to account for the prepended course
+      courses.splice(existingIdx + 1, 1)
+    } else if (courses.length > 10) {
+      // remove last course if length exceeds the limit
+      courses.splice(courses.length - 1, 1)
     }
   },
   remove({ courses }, slug) {
