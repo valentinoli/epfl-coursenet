@@ -93,6 +93,7 @@ export default {
       name: appName,
       theme_color: '#ffffff',
       ogHost: host,
+      // set og:title with vue-meta
       ogTitle: false,
     },
     manifest: {

@@ -593,9 +593,9 @@ export default class Graph {
       .data(nodes, (d) => `cell-${nodeGroup}-${d.slug}`)
       .join('path')
       .attr('fill', getColor)
-      .attr('stroke', getColor)
+      .attr('stroke', 'white')
       .attr('opacity', this.graphOpacityVoronoi)
-      .attr('stroke-width', 0)
+      .attr('stroke-width', 1)
   }
 
   resetVoronoiGrouping(nodeGroup) {
