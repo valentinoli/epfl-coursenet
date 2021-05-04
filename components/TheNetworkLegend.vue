@@ -1,22 +1,24 @@
 <template>
   <div class="legend">
-    <legend-row
-      :items="nodeGroupItems"
-      heading="Groups"
-      :subheading="nodeGroupItemsSubheading"
-      item-variant="square"
-    />
-    <legend-row
-      v-if="nodeGroup && nodeGroup !== 'bipartition'"
-      :items="nodeGroupLecturerItems"
-      subheading="Lecturers"
-      item-variant="square"
-    />
-    <legend-row
-      :items="neighborhoodItems"
-      subheading="Neighborhood"
-      item-variant="square"
-    />
+    <template v-if="nodeGroup">
+      <legend-row
+        :items="nodeGroupItems"
+        heading="Groups"
+        :subheading="nodeGroupItemsSubheading"
+        item-variant="square"
+      />
+      <legend-row
+        v-if="nodeGroup !== 'bipartition'"
+        :items="nodeGroupLecturerItems"
+        subheading="Lecturers"
+        item-variant="square"
+      />
+      <legend-row
+        :items="neighborhoodItems"
+        subheading="Neighborhood"
+        item-variant="square"
+      />
+    </template>
     <legend-row
       :items="nodeFillItems"
       heading="Nodes"

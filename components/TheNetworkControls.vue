@@ -19,8 +19,10 @@
           @change="change(s.storeKey, $event)"
         />
       </div>
-      <div v-else style="min-width: 180px">
-        <v-subheader class="px-0 mb-8">Similarity threshold</v-subheader>
+      <div v-else class="d-flex flex-column" style="min-width: 180px">
+        <v-subheader class="px-0 mb-8 align-self-center align-self-sm-start">
+          Similarity threshold
+        </v-subheader>
         <v-slider
           v-model="similaritySlider"
           :min="0.2"
