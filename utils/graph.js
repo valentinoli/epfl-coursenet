@@ -215,17 +215,19 @@ export default class Graph {
         const { top, bottom, left } = element.getBoundingClientRect()
         this.isDragging = false
         this.vue.showTooltip()
-        this.vue.$nextTick(() => {
-          // update tooltip position after next tick to avoid
-          // strange bug that makes tooltip stretch to the far left
-          // first time it renders
-          this.vue.updateTooltipPosition(
-            { clientX: left, clientY: top },
-            0,
-            // push tooltip below node
-            bottom - top + 20
-          )
-        })
+        if (!this.vue.touchInterface) {
+          this.vue.$nextTick(() => {
+            // update tooltip position after next tick to avoid
+            // strange bug that makes tooltip stretch to the far left
+            // first time it renders
+            this.vue.updateTooltipPosition(
+              { clientX: left, clientY: top },
+              0,
+              // push tooltip below node
+              bottom - top + 20
+            )
+          })
+        }
         this.highlightNodeNeighborhood(d, element)
       })
   }
@@ -462,9 +464,10 @@ export default class Graph {
             this.vue.graphData.nodes.find((n) => n.slug === d.slug)
           )
           this.vue.showTooltip()
-          this.vue.$nextTick(() => {
-            this.vue.updateTooltipPosition(event)
-          })
+          if (!this.vue.touchInterface)
+            this.vue.$nextTick(() => {
+              this.vue.updateTooltipPosition(event)
+            })
         }
       }, 250)
     }

@@ -9,18 +9,13 @@
         class="network-button-group d-flex flex-column flex-sm-column-reverse align-end"
         :style="buttonGroupStyle"
       >
-        <v-tooltip left>
-          <template #activator="{ on }">
-            <!-- <base-icon-button v-on="on" @click="centerGraph">
-              mdi-crosshairs-gps
-            </base-icon-button> -->
-            <v-btn icon v-on="on" @click="centerGraph">
-              <v-icon>mdi-crosshairs-gps</v-icon>
-            </v-btn>
-          </template>
-          <span>Reset position</span>
-        </v-tooltip>
-        <v-menu :bottom="!xs" close-on-click offset-x offset-y>
+        <v-menu
+          :bottom="!smAndDown"
+          :top="smAndDown"
+          close-on-click
+          offset-x
+          offset-y
+        >
           <template #activator="{ attrs, on: onMenu }">
             <v-tooltip left>
               <template #activator="{ on: onTooltip }">
@@ -32,7 +27,7 @@
                 <v-btn
                   icon
                   v-bind="attrs"
-                  v-on="xs ? onMenu : { ...onMenu, ...onTooltip }"
+                  v-on="touchInterface ? onMenu : { ...onMenu, ...onTooltip }"
                 >
                   <v-icon>mdi-graph</v-icon>
                 </v-btn>
@@ -60,6 +55,17 @@
             </v-list-item-group>
           </v-list>
         </v-menu>
+        <v-tooltip left>
+          <template #activator="{ on }">
+            <!-- <base-icon-button v-on="on" @click="centerGraph">
+              mdi-crosshairs-gps
+            </base-icon-button> -->
+            <v-btn icon v-on="on" @click="centerGraph">
+              <v-icon>mdi-crosshairs-gps</v-icon>
+            </v-btn>
+          </template>
+          <span>Reset position</span>
+        </v-tooltip>
         <div class="d-flex">
           <v-scroll-x-transition>
             <v-autocomplete
@@ -159,13 +165,13 @@ export default {
     graphTypeIndex() {
       return this.graphTypes.findIndex((t) => t.value === this.graphType)
     },
-    xs() {
-      return this.$vuetify.breakpoint.xsOnly
+    smAndDown() {
+      return this.$vuetify.breakpoint.smAndDown
     },
     buttonGroupStyle() {
       const margin = '10px'
       const style = { position: 'absolute', right: margin }
-      return this.xs
+      return this.smAndDown
         ? {
             ...style,
             bottom: margin,
@@ -239,6 +245,9 @@ export default {
       // some browsers don't yet support TouchEvents, so we handle both touchstart and click
       this.tooltipContentEl.addEventListener('touchstart', this.onTouchTooltip)
       this.tooltipContentEl.addEventListener('click', this.onTouchTooltip)
+      this.tooltipContentEl.style.left = 'auto'
+      this.tooltipContentEl.style.top = 'auto'
+      this.tooltipContentEl.style.bottom = `60px`
     },
     hideTooltip() {
       this.tooltip = false
