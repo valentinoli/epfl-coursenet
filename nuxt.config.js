@@ -1,6 +1,6 @@
 import colors from 'vuetify/es5/util/colors'
 
-const name = 'EPFL CourseNet'
+const appName = 'EPFL CourseNet'
 const host = 'https://epfl-coursenet.herokuapp.com'
 
 export default {
@@ -11,14 +11,13 @@ export default {
       return title ? `${title} | ${appName}` : appName
     },
     title: '',
-    // `%s - ${appName}`,
-    // title: appName,
-    // meta: [
-    // { charset: 'utf-8' },
-    // { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-    // { hid: 'description', name: 'description', content: '' },
-    // ],
-    // link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }],
+    meta: [
+      {
+        hid: 'og-title',
+        property: 'og:title',
+        content: appName,
+      },
+    ],
   },
 
   router: {
@@ -91,12 +90,13 @@ export default {
   pwa: {
     icon: {},
     meta: {
-      name,
+      name: appName,
       theme_color: '#ffffff',
       ogHost: host,
+      ogTitle: false,
     },
     manifest: {
-      name,
+      name: appName,
       short_name: 'CourseNet',
     },
   },
@@ -128,7 +128,7 @@ export default {
 
   env: {
     baseUrl: process.env.BASE_URL || 'http://localhost:3000',
-    appName: 'EPFL CourseNet',
+    appName,
   },
 
   // Build Configuration: https://go.nuxtjs.dev/config-build

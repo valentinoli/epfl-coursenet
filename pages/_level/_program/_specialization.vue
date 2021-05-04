@@ -147,6 +147,13 @@ export default {
     }
     return {
       title,
+      meta: [
+        {
+          hid: 'og-title',
+          property: 'og:title',
+          content: `${title} | ${this.$appName}`,
+        },
+      ],
     }
   },
   computed: {

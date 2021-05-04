@@ -1,4 +1,4 @@
-export default ({ app, $axios }, inject) => {
+export default ({ app, $axios, env }, inject) => {
   inject(
     'camelCaseTransform',
     (string) =>
@@ -17,4 +17,6 @@ export default ({ app, $axios }, inject) => {
       slugs,
     })
   })
+
+  inject('appName', env.appName)
 }

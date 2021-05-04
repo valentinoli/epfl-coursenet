@@ -53,8 +53,16 @@ export default {
     }
   },
   head() {
+    const title = `${this.code} ${this.name}`
     return {
-      title: `${this.code} ${this.name}`,
+      title,
+      meta: [
+        {
+          hid: 'og-title',
+          property: 'og:title',
+          content: `${title} | ${this.$appName}`,
+        },
+      ],
     }
   },
   computed: {
