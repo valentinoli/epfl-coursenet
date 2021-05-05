@@ -7,7 +7,7 @@
     :overlay-opacity="0.2"
     overlay-color="primary"
     :width="width"
-    class="px-5 pt-5"
+    class="pa-5"
     @input="$emit('input', $event)"
   >
     <template #prepend>

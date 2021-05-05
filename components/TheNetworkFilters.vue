@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="pb-5">
     <v-treeview
       v-if="showTreeview"
       v-model="treeviewSelected"
