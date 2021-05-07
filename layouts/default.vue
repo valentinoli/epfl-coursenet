@@ -102,6 +102,17 @@ export default {
       courseFinder: false,
     }
   },
+  head() {
+    return {
+      meta: [
+        {
+          hid: 'og:url',
+          property: 'og:url',
+          content: `${process.env.baseUrl}${this.$route.path}`,
+        },
+      ],
+    }
+  },
   computed: {
     ...mapState(['navTreeviewItems', 'touchInterface']),
     xs() {

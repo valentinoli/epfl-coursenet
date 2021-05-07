@@ -59,7 +59,6 @@ export default {
       meta: [
         {
           hid: 'og:title',
-          name: 'og:title',
           property: 'og:title',
           content: `${title} | ${this.$appName}`,
         },

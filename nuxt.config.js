@@ -3,6 +3,13 @@ import colors from 'vuetify/es5/util/colors'
 const appName = 'EPFL CourseNet'
 const host = 'https://epfl-coursenet.herokuapp.com'
 
+let baseUrl = 'http://localhost:3000'
+if (process.production) {
+  baseUrl =
+    process.env.BASE_URL ||
+    `https://${process.env.HEROKU_APP_NAME}.herokuapp.com`
+}
+
 export default {
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
@@ -14,7 +21,6 @@ export default {
     meta: [
       {
         hid: 'og:title',
-        name: 'og:title',
         property: 'og:title',
         content: appName,
       },
@@ -94,8 +100,9 @@ export default {
       name: appName,
       theme_color: '#ffffff',
       ogHost: host,
-      // set og:title with vue-meta
+      // set following meta tags with vue-meta
       ogTitle: false,
+      ogUrl: false,
     },
     manifest: {
       name: appName,
@@ -129,7 +136,7 @@ export default {
   },
 
   env: {
-    baseUrl: process.env.BASE_URL || 'http://localhost:3000',
+    baseUrl,
     appName,
   },
 
