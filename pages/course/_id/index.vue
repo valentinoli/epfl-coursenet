@@ -43,14 +43,9 @@
 
 <script>
 export default {
-  async asyncData({ $axios, params, error, store }) {
-    try {
-      const data = await $axios.$get(`/course/${params.id}`)
-      // store.commit('courses/push', data)
-      return { ...data }
-    } catch (e) {
-      error(e)
-    }
+  async asyncData({ $axios, params }) {
+    const data = await $axios.$get(`/course/${params.id}`)
+    return { ...data }
   },
   head() {
     const title = `${this.code} ${this.name}`
@@ -95,8 +90,7 @@ export default {
     $route: {
       immediate: true,
       handler() {
-        const { slug, name, code } = this
-        this.$store.commit('courses/push', { slug, name, code })
+        this.$store.commit('courses/push', this)
       },
     },
   },

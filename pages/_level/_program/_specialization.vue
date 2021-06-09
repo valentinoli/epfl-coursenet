@@ -64,41 +64,31 @@ import graphUtils from '@/utils/graph-filtering'
 import { mapGetters, mapState, mapMutations } from 'vuex'
 
 export default {
-  async asyncData({
-    $axios,
-    route,
-    error,
-    store: { commit, state },
-    $fetchSimlinks,
-  }) {
+  async asyncData({ $axios, route, store: { commit, state }, $fetchSimlinks }) {
     const endpoint = route.fullPath === '/all-courses' ? '/' : route.fullPath
-    try {
-      const data = await $axios.$get(`/epfl${endpoint}`, { progress: false })
-      const treeview = [data.treeview]
-      if (route.fullPath !== state.previousEntityRoute) {
-        // important! commit course slugs before fetching similarity links
-        const { courses } = data.treeview
-        commit('setCourseSlugs', courses)
-        if (state.graphType === 'similarity') {
-          // note: if we dispatch the 'fetchSimilarityLinks' vuex action
-          // instead of the following, it will not be executed until asyncData()
-          // has finished making the graph render without any links
-          const links = await $fetchSimlinks(
-            state.controls.similarityThreshold,
-            courses
-          )
-          commit('setSimilarityLinks', links)
-        }
-        // important: reset only after fetching similarity links
-        commit('filters/resetMultiselects')
-        commit('filters/resetTreeview', treeview)
-        commit('filters/resetCourseCherries')
+    const data = await $axios.$get(`/epfl${endpoint}`, { progress: false })
+    const treeview = [data.treeview]
+    if (route.fullPath !== state.previousEntityRoute) {
+      // important! commit course slugs before fetching similarity links
+      const { courses } = data.treeview
+      commit('setCourseSlugs', courses)
+      if (state.graphType === 'similarity') {
+        // note: if we dispatch the 'fetchSimilarityLinks' vuex action
+        // instead of the following, it will not be executed until asyncData()
+        // has finished making the graph render without any links
+        const links = await $fetchSimlinks(
+          state.controls.similarityThreshold,
+          courses
+        )
+        commit('setSimilarityLinks', links)
       }
-      delete data.treeview
-      return { ...data }
-    } catch (e) {
-      error(e)
+      // important: reset only after fetching similarity links
+      commit('filters/resetMultiselects')
+      commit('filters/resetTreeview', treeview)
+      commit('filters/resetCourseCherries')
     }
+    delete data.treeview
+    return { ...data }
   },
   data() {
     return {

@@ -48,6 +48,7 @@ export default {
     '~/plugins/external-resources.js',
     { src: '~/plugins/graph.js', mode: 'client' },
     '~/plugins/vuex-persistedstate.js',
+    '~/plugins/axios.js',
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components

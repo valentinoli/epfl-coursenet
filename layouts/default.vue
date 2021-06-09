@@ -1,8 +1,7 @@
 <template>
-  <v-app :style="{}">
+  <v-app>
     <v-app-bar app color="white">
       <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
-      <!-- <v-scroll-x-transition mode="out-in"> -->
       <v-toolbar-title
         v-if="!courseFinder"
         class="d-flex align-center pl-2 pl-sm-4"
@@ -20,7 +19,6 @@
             class="mr-2"
             contain
             :src="require('@/static/epfl-logo.svg')"
-            transition="scale-transition"
             width="60"
           />
           <span>CourseNet</span>

@@ -1,12 +1,14 @@
 <template>
   <v-app>
-    <h1 v-if="error.statusCode === 404">
-      {{ pageNotFound }}
-    </h1>
-    <h1 v-else>
-      {{ otherError }}
-    </h1>
-    <nuxt-link to="/"> Home page </nuxt-link>
+    <v-container>
+      <h1 v-if="error.statusCode === 404">
+        {{ pageNotFound }}
+      </h1>
+      <h1 v-else>
+        {{ otherError }}
+      </h1>
+      <nuxt-link to="/">Home page</nuxt-link>
+    </v-container>
   </v-app>
 </template>
 
@@ -16,12 +18,12 @@ export default {
   props: {
     error: {
       type: Object,
-      default: null,
+      default: () => ({}),
     },
   },
   data() {
     return {
-      pageNotFound: '404 Not Found',
+      pageNotFound: 'Page not found',
       otherError: 'An error occurred',
     }
   },

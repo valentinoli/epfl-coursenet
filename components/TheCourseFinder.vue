@@ -14,8 +14,7 @@
     no-filter
     :prepend-icon="prependIcon"
     :append-outer-icon="appendOuterIcon"
-    @update:search-input="updateSearch"
-    @change="$router.push(`/course/${$event}`)"
+    @change="onChange"
   >
     <template #selection>
       <!-- Prevent display of selected item -->
@@ -24,7 +23,7 @@
 </template>
 
 <script>
-import debounce from 'lodash.debounce'
+import debounce from 'debounce-async'
 
 export default {
   props: {
@@ -43,19 +42,41 @@ export default {
       items: [],
       search: null,
       loading: false,
+      cancel: null,
+      updateSearchDebounced: debounce(async function (val) {
+        if (this.cancel) {
+          // cancel previous request
+          this.cancel()
+          this.cancel = null
+        }
+
+        if (val) {
+          this.loading = true
+          this.items = await this.$axios.$get(`/course/search?query=${val}`, {
+            cancelToken: new this.$axios.CancelToken((c) => (this.cancel = c)),
+          })
+        } else {
+          // no search string -> empty result set
+          this.items = []
+        }
+
+        this.loading = false
+      }, 500),
     }
   },
+  watch: {
+    search(val) {
+      this.updateSearchDebounced(val).catch((e) => {})
+    },
+  },
   methods: {
-    updateSearch: debounce(async function (val) {
-      if (val) {
-        this.loading = true
-        this.items = await this.$axios.$get(`/course/search?query=${val}`)
-        this.loading = false
-      }
-    }, 500),
     itemText({ code, name }) {
       // https://github.com/vuetifyjs/vuetify/issues/11585
       return `${code} ${name}`
+    },
+    onChange(slug) {
+      this.$router.push(`/course/${slug}`)
+      this.selected = null
     },
   },
 }

@@ -3,11 +3,10 @@ export const state = () => ({
 })
 
 export const mutations = {
-  push({ courses }, course) {
-    const { slug } = course
+  push({ courses }, { slug, name, code }) {
     const existingIdx = courses.findIndex((c) => c.slug === slug)
     // prepend new course
-    courses.splice(0, 0, course)
+    courses.splice(0, 0, { slug, name, code })
 
     if (existingIdx !== -1) {
       // remove existing course from its old position
