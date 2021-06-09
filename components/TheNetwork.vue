@@ -6,66 +6,28 @@
       </div>
 
       <div
-        class="network-button-group d-flex flex-column flex-sm-column-reverse align-end"
+        class="network-button-group d-flex align-end"
+        :class="[smAndDown ? 'flex-column-reverse' : 'flex-column']"
         :style="buttonGroupStyle"
       >
-        <v-menu
-          :bottom="!smAndDown"
-          :top="smAndDown"
-          close-on-click
-          offset-x
-          offset-y
-        >
-          <template #activator="{ attrs, on: onMenu }">
-            <v-tooltip left>
-              <template #activator="{ on: onTooltip }">
-                <!-- <base-icon-button
-                  v-bind="attrs"
-                  v-on="{ ...onMenu, ...onTooltip }"
-                >
-                </base-icon-button> -->
-                <v-btn
-                  icon
-                  v-bind="attrs"
-                  v-on="touchInterface ? onMenu : { ...onMenu, ...onTooltip }"
-                >
-                  <v-icon>mdi-graph</v-icon>
-                </v-btn>
-              </template>
-              <span>Change network type</span>
-            </v-tooltip>
-          </template>
-          <v-list>
-            <v-list-item-group
-              :value="graphTypeIndex"
-              mandatory
-              @change="changeGraphTypeIndex"
-            >
-              <v-list-item v-for="(item, i) in graphTypes" :key="i">
-                <v-list-item-title class="mr-1">{{
-                  item.text
-                }}</v-list-item-title>
-                <!-- <v-list-item-icon
-                  v-for="(icon, j) in item.icons"
-                  :key="j"
-                  class="mx-1"
-                  ><v-icon>mdi-{{ icon }}</v-icon></v-list-item-icon
-                > -->
-              </v-list-item>
-            </v-list-item-group>
-          </v-list>
-        </v-menu>
-        <v-tooltip left>
-          <template #activator="{ on }">
-            <!-- <base-icon-button v-on="on" @click="centerGraph">
-              mdi-crosshairs-gps
-            </base-icon-button> -->
-            <v-btn icon v-on="on" @click="centerGraph">
-              <v-icon>mdi-crosshairs-gps</v-icon>
-            </v-btn>
-          </template>
-          <span>Reset position</span>
-        </v-tooltip>
+        <div class="d-flex">
+          <v-scroll-x-transition>
+            <v-select
+              v-if="graphTypeSelect"
+              :value="graphType"
+              :items="graphTypes"
+              hide-details
+              class="pt-0 mr-2"
+              style="max-width: 260px"
+              :menu-props="`offsetY, ${smAndDown ? 'top' : 'bottom'}`"
+              @change="changeGraphType"
+            />
+          </v-scroll-x-transition>
+          <v-btn icon @click="graphTypeSelect = !graphTypeSelect">
+            <v-icon>mdi-graph</v-icon>
+          </v-btn>
+        </div>
+
         <div class="d-flex">
           <v-scroll-x-transition>
             <v-autocomplete
@@ -77,7 +39,7 @@
               hide-selected
               hide-details
               return-object
-              class="pt-0"
+              class="pt-0 mr-2"
               @change="networkSearchOnChange"
             >
               <template #selection>
@@ -87,13 +49,26 @@
           </v-scroll-x-transition>
           <v-tooltip left>
             <template #activator="{ on }">
-              <v-btn icon v-on="on" @click="networkSearch = !networkSearch">
+              <v-btn
+                icon
+                v-on="networkSearch ? {} : on"
+                @click="networkSearch = !networkSearch"
+              >
                 <v-icon>mdi-map-search-outline</v-icon>
               </v-btn>
             </template>
             <span>Search the network</span>
           </v-tooltip>
         </div>
+
+        <v-tooltip left>
+          <template #activator="{ on }">
+            <v-btn icon v-on="on" @click="centerGraph">
+              <v-icon>mdi-crosshairs-gps</v-icon>
+            </v-btn>
+          </template>
+          <span>Reset position</span>
+        </v-tooltip>
       </div>
       <svg></svg>
     </div>
@@ -131,12 +106,10 @@ export default {
         {
           value: 'directed',
           text: 'Course Dependency Network',
-          // icons: ['book-education-outline', 'arrow-right', 'book-education'],
         },
         {
           value: 'bipartite',
           text: 'Courses-Lecturers Network',
-          // icons: ['book-education-outline', 'minus', 'human-male-female'],
         },
         {
           value: 'similarity',
@@ -149,6 +122,7 @@ export default {
       tooltip: true,
       tooltipContentEl: null,
       networkSearch: false,
+      graphTypeSelect: true,
     }
   },
   computed: {
@@ -225,9 +199,8 @@ export default {
   methods: {
     ...mapMutations(['setSelectedNode']),
     ...mapActions(['graphTypeAction']),
-    changeGraphTypeIndex(index) {
-      const graphType = this.graphTypes[index].value
-      this.graphTypeAction(graphType)
+    changeGraphType(value) {
+      this.graphTypeAction(value)
     },
     renderGraph() {
       this.graph.render(this.graphData)
@@ -247,7 +220,7 @@ export default {
       this.tooltipContentEl.addEventListener('click', this.onTouchTooltip)
       this.tooltipContentEl.style.left = 'auto'
       this.tooltipContentEl.style.top = 'auto'
-      this.tooltipContentEl.style.bottom = `60px`
+      this.tooltipContentEl.style.bottom = '68px'
     },
     hideTooltip() {
       this.tooltip = false
