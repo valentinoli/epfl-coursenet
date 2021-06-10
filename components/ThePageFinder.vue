@@ -8,7 +8,7 @@
     placeholder="Start typing..."
     prepend-icon="mdi-magnify"
     append-outer-icon="mdi-school"
-    :menu-props="{ offsetY: true, bottom: true, maxHeight: '200px' }"
+    :menu-props="{ offsetY: true, bottom: true }"
     @change="$router.push($event)"
   >
     <template #selection>
