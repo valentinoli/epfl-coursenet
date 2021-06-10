@@ -190,13 +190,15 @@ export default {
     // Only executed on client
     this.graph = new this.$graph(this)
     this.renderGraph()
-    window.addEventListener('resize', () => {
-      this.graph.setSVGViewBox()
-    })
+    this.onResize = () => this.graph.setSVGViewBox()
+    window.addEventListener('resize', this.onResize)
 
     this.tooltipContentEl = this.$refs.tooltip.$refs.content
     this.configureTouchExperience()
     this.hideTooltip()
+  },
+  beforeDestroy() {
+    window.removeEventListener('resize', this.onResize)
   },
   methods: {
     ...mapMutations(['setSelectedNode']),
