@@ -36,7 +36,12 @@
         <the-course-finder
           v-if="!xs || courseFinder"
           :style="{ maxWidth: xs ? '100%' : '300px' }"
-          prepend-icon=""
+          :prepend-icon="xs ? '' : 'mdi-magnify'"
+          class="ml-2"
+          solo
+          outlined
+          dense
+          flat
         />
       </template>
     </v-app-bar>

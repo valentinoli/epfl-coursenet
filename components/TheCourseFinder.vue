@@ -5,7 +5,6 @@
     :items="items"
     item-value="slug"
     :item-text="itemText"
-    :loading="loading"
     :search-input.sync="search"
     label="Search courses"
     placeholder="Type any keyword..."
@@ -14,10 +13,25 @@
     no-filter
     :prepend-icon="prependIcon"
     :append-outer-icon="appendOuterIcon"
+    append-icon=""
     @change="onChange"
   >
     <template #selection>
       <!-- Prevent display of selected item -->
+    </template>
+    <template v-if="loading" #append-outer>
+      <v-progress-circular :indeterminate="loading" :size="24" />
+    </template>
+    <template #item="{ item: i }">
+      <div>
+        <v-progress-circular :value="i.cosine_similarity" class="mr-3">
+          <span style="font-size: 0.7em">{{ i.cosine_similarity }}</span>
+        </v-progress-circular>
+      </div>
+      <div>
+        <span class="font-weight-bold">{{ i.code }}</span>
+        <span>{{ i.name }}</span>
+      </div>
     </template>
   </v-autocomplete>
 </template>
@@ -77,6 +91,7 @@ export default {
     onChange(slug) {
       this.$router.push(`/course/${slug}`)
       this.selected = null
+      this.$el.querySelector('input').blur()
     },
   },
 }

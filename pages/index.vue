@@ -1,5 +1,5 @@
 <template>
-  <div class="d-flex flex-column align-center justify-center mt-16">
+  <div class="d-flex flex-column align-center justify-center mt-6 mt-sm-16">
     <h1 class="text-center">
       Welcome to the<br v-if="$vuetify.breakpoint.xsOnly" />
       <img
@@ -8,7 +8,9 @@
         style="height: 25px"
       />CourseNet
     </h1>
-    <the-page-finder class="mt-8" />
-    <the-course-finder class="mt-8" />
+    <div style="max-width: 300px">
+      <the-page-finder class="mt-8" width="inherit" />
+      <the-course-finder class="mt-8" width="inherit" />
+    </div>
   </div>
 </template>

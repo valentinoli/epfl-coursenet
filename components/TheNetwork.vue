@@ -10,15 +10,16 @@
         :class="[smAndDown ? 'flex-column-reverse' : 'flex-column']"
         :style="buttonGroupStyle"
       >
-        <div class="d-flex">
+        <div class="d-flex mt-md-2">
           <v-scroll-x-transition>
             <v-select
               v-if="graphTypeSelect"
               :value="graphType"
               :items="graphTypes"
+              label="Network type"
               hide-details
               class="pt-0 mr-2"
-              style="max-width: 260px"
+              style="max-width: 200px"
               :menu-props="`offsetY, ${smAndDown ? 'top' : 'bottom'}`"
               @change="changeGraphType"
             />
@@ -28,7 +29,7 @@
           </v-btn>
         </div>
 
-        <div class="d-flex">
+        <div class="d-flex mb-3">
           <v-scroll-x-transition>
             <v-autocomplete
               v-if="networkSearch"
@@ -40,6 +41,7 @@
               hide-details
               return-object
               class="pt-0 mr-2"
+              style="max-width: 200px"
               @change="networkSearchOnChange"
             >
               <template #selection>
@@ -63,7 +65,7 @@
 
         <v-tooltip left>
           <template #activator="{ on }">
-            <v-btn icon v-on="on" @click="centerGraph">
+            <v-btn icon class="mb-3" v-on="on" @click="centerGraph">
               <v-icon>mdi-crosshairs-gps</v-icon>
             </v-btn>
           </template>
@@ -105,15 +107,15 @@ export default {
       graphTypes: [
         {
           value: 'directed',
-          text: 'Course Dependency Network',
+          text: 'Course Dependency',
         },
         {
           value: 'bipartite',
-          text: 'Courses-Lecturers Network',
+          text: 'Courses-Lecturers',
         },
         {
           value: 'similarity',
-          text: 'Course Similarity Network',
+          text: 'Course Similarity',
         },
       ],
       graph: {},
