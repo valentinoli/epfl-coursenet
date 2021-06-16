@@ -43,8 +43,12 @@ export default {
   methods: {
     ...mapMutations(['setCurrentView', 'setSelectedNode']),
     onClick() {
+      const view = 'the-network'
+      this.$router.push({
+        query: { view },
+      })
+      this.setCurrentView(view)
       this.setSelectedNode({ ...this.item, triggerZoom: true })
-      this.setCurrentView('the-network')
     },
   },
 }
