@@ -146,7 +146,10 @@ export default {
     },
     buttonGroupStyle() {
       const margin = '10px'
-      const style = { position: 'absolute', right: margin }
+      const style = {
+        position: 'absolute',
+        right: margin,
+      }
       return this.smAndDown
         ? {
             ...style,
@@ -299,6 +302,14 @@ $absolute-margin: 10px
   /* Override Vuetify default, enable pointer events */
   pointer-events: auto
 
-.network-button-group .v-btn
-  margin-bottom: 4px
+.network-button-group
+  cursor: move
+  // Disallow pointer events in container only
+  // to allow the user to interact with the graph in that area
+  pointer-events: none
+  > *
+    // but we do want the user to be able to click on the actions
+    pointer-events: auto
+  .v-btn
+    margin-bottom: 4px
 </style>
