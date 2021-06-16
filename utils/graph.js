@@ -46,6 +46,7 @@ export default class Graph {
   isDragging = false
   mouseleft = true
   initialScale = 0
+  transitionLinks = false
 
   constructor(vue) {
     // We want access to the vue component
@@ -684,8 +685,11 @@ export default class Graph {
       this.groupNodes(nodeGroup)
       this.renderVoronoi()
     }
-
-    this.link
+    let linkSelection = this.link
+    if (this.transitionLinks) {
+      linkSelection = linkSelection.transition(getTransition())
+    }
+    linkSelection
       .attr('x1', this.linkX1.bind(this))
       .attr('y1', this.linkY1.bind(this))
       .attr('x2', this.linkX2.bind(this))
@@ -861,7 +865,7 @@ export default class Graph {
     }
   }
 
-  restartSimulation(nodes, links, nodeGroup) {
+  resetSimulation(nodes, links, nodeGroup) {
     // Set simulation's nodes
     this.simulation.nodes(nodes)
     // Associate links to the link force
@@ -900,12 +904,25 @@ export default class Graph {
       this.simulation.force('x').strength(this.defaultForceXYStrength)
       this.simulation.force('y').strength(this.defaultForceXYStrength)
     }
-
-    // Restart simulation
-    this.simulation.alpha(1).restart()
   }
 
-  render({ nodes: n, links: l }) {
+  restartSimulation(alpha) {
+    const currentAlpha = this.simulation.alpha()
+
+    this.transitionLinks = false
+    if (alpha === 0 && currentAlpha < 0.02) {
+      // if alpha === 0 and the simulation has almost cooled down
+      // we want to restart without reheating the simulation
+      // --> apply a smooth transition to the links
+      this.transitionLinks = true
+      this.simulation.alpha(alpha).restart()
+    } else if (alpha > 0) {
+      // else if alpha > 0, restart the simulation without links transition
+      this.simulation.alpha(alpha).restart()
+    }
+  }
+
+  render({ nodes: n, links: l }, alpha = 1) {
     // Make a shallow copy to protect against mutation, while
     // recycling old nodes to preserve position and velocity.
     const old = new Map(this.node.data().map((d) => [d.slug, d]))
@@ -914,10 +931,10 @@ export default class Graph {
 
     this.renderLinks(links)
     this.renderNodes(nodes)
-
     const { nodeGroup } = this.vue.controls
 
-    this.restartSimulation(nodes, links, nodeGroup)
+    this.resetSimulation(nodes, links, nodeGroup)
+    this.restartSimulation(alpha)
     this.resetVoronoiGrouping(nodeGroup)
 
     // Set initial scale depending on the number of nodes in the graph
@@ -930,7 +947,5 @@ export default class Graph {
     if (this.vue.isDirectedGraph) {
       this.collisionOffset += this.arrowMarkerWidth
     }
-
-    this.centerGraph()
   }
 }

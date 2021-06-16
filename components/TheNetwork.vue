@@ -174,11 +174,15 @@ export default {
         }
       },
     },
-    controls: {
-      deep: true,
-      handler() {
-        this.renderGraph()
-      },
+    'controls.nodeSize'() {
+      // pass alpha === 0 to avoid reheating simulation
+      this.renderGraph(0)
+    },
+    'controls.nodeColor'() {
+      this.renderGraph(0)
+    },
+    'controls.nodeGroup'() {
+      this.renderGraph()
     },
     touchInterface(val) {
       if (val) {
@@ -190,6 +194,7 @@ export default {
     // Only executed on client
     this.graph = new this.$graph(this)
     this.renderGraph()
+    this.centerGraph()
     this.onResize = () => this.graph.setSVGViewBox()
     window.addEventListener('resize', this.onResize)
 
@@ -206,8 +211,8 @@ export default {
     changeGraphType(value) {
       this.graphTypeAction(value)
     },
-    renderGraph() {
-      this.graph.render(this.graphData)
+    renderGraph(alpha) {
+      this.graph.render(this.graphData, alpha)
     },
     centerGraph() {
       this.graph.centerGraph()
