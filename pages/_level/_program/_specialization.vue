@@ -1,7 +1,7 @@
 <template>
   <div>
     <lazy-the-network-navigation-drawer
-      v-bind="{ ...filterOptionsFiltered, ...actionButtons[0] }"
+      v-bind="{ ...filterOptionsFiltered, ...actionButtons[1] }"
       :courses="subgraphNodesFiltered"
     />
     <!-- transition seems to mess up with d3 transition on the <svg> somehow -->
@@ -33,20 +33,17 @@
         </v-btn>
       </div>
       <div class="d-flex v-btn-group--inactive">
-        <v-btn
-          v-for="{ label, icon, click } in actionButtons"
-          :key="label"
-          :style="btnStyle"
-          @click="click"
-        >
-          <span>{{ label }}</span>
-          <v-icon>{{ icon }}</v-icon>
-        </v-btn>
+        <template v-for="{ label, icon, click, display } in actionButtons">
+          <v-btn v-if="display" :key="label" :style="btnStyle" @click="click">
+            <span>{{ label }}</span>
+            <v-icon>{{ icon }}</v-icon>
+          </v-btn>
+        </template>
       </div>
     </v-bottom-navigation>
     <lazy-base-bottom-sheet
       :value.sync="showControls"
-      v-bind="actionButtons[1]"
+      v-bind="actionButtons[0]"
     >
       <the-network-controls />
     </lazy-base-bottom-sheet>
@@ -106,25 +103,6 @@ export default {
           icon: 'mdi-table-large',
         },
       ],
-      actionButtons: [
-        {
-          label: 'Filters',
-          icon: 'mdi-filter-outline',
-          click: () => {
-            this.toggleDrawer()
-          },
-        },
-        {
-          label: 'Controls',
-          icon: 'mdi-tune-variant',
-          click: () => (this.showControls = true),
-        },
-        {
-          label: 'Legend',
-          icon: 'mdi-map-legend',
-          click: () => (this.showLegend = true),
-        },
-      ],
     }
   },
   head() {
@@ -158,6 +136,28 @@ export default {
       filtersAllDefault: 'filters/allDefault',
       isDataTable: 'isCurrentViewDataTable',
     }),
+    actionButtons() {
+      return [
+        {
+          label: 'Controls',
+          icon: 'mdi-tune-variant',
+          click: () => (this.showControls = true),
+          display: this.currentView === 'the-network',
+        },
+        {
+          label: 'Filters',
+          icon: 'mdi-filter-outline',
+          click: this.toggleDrawer,
+          display: true,
+        },
+        {
+          label: 'Legend',
+          icon: 'mdi-map-legend',
+          click: () => (this.showLegend = true),
+          display: true,
+        },
+      ]
+    },
     bottomNavigation() {
       return this.viewButtons.findIndex((b) => b.view === this.currentView)
     },
