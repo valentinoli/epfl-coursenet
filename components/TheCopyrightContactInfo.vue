@@ -1,7 +1,7 @@
 <template>
   <div class="d-flex align-center" style="font-size: 0.9em">
     <v-icon small class="mr-1">mdi-copyright</v-icon>
-    <span>{{ new Date().getFullYear() }} Valentin Loftsson —&nbsp;</span>
+    <span class="mr-2">{{ new Date().getFullYear() }} Valentin Loftsson</span>
     <v-btn
       href="mailto:valentin.loftsson@epfl.ch"
       target="_blank"
