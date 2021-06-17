@@ -10,7 +10,7 @@
         :class="[smAndDown ? 'flex-column-reverse' : 'flex-column']"
         :style="buttonGroupStyle"
       >
-        <div class="d-flex mt-md-2">
+        <div class="d-flex my-2">
           <v-scroll-x-transition>
             <v-select
               v-if="graphTypeSelect"
@@ -29,7 +29,7 @@
           </v-btn>
         </div>
 
-        <div class="d-flex mb-3 mb-sm-0 mt-sm-3">
+        <div class="d-flex my-2">
           <v-scroll-x-transition>
             <v-autocomplete
               v-if="networkSearch"
@@ -65,7 +65,7 @@
 
         <v-tooltip left>
           <template #activator="{ on }">
-            <v-btn icon class="mb-3 mt-sm-3" v-on="on" @click="centerGraph">
+            <v-btn icon class="my-2" v-on="on" @click="centerGraph">
               <v-icon>mdi-crosshairs-gps</v-icon>
             </v-btn>
           </template>
