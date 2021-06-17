@@ -12,5 +12,13 @@
       <the-page-finder class="mt-8" width="inherit" />
       <the-course-finder class="mt-8" width="inherit" />
     </div>
+    <v-footer
+      app
+      class="d-flex justify-center align-center font-weight-light px-1"
+      color="white"
+      elevation="5"
+    >
+      <the-copyright-contact-info />
+    </v-footer>
   </div>
 </template>

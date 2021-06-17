@@ -61,7 +61,7 @@
         hoverable
         shaped
         dense
-        class="my-4"
+        class="mt-3 mb-6"
       >
         <template #label="{ item: { name, value, params } }">
           <div class="d-flex align-center">
@@ -84,6 +84,11 @@
         </template>
       </v-treeview>
       <the-recent-courses-list />
+      <template v-if="$route.path !== '/'" #append>
+        <div class="d-flex justify-center elevation-5 py-1 mx-n5 mb-n5">
+          <the-copyright-contact-info />
+        </div>
+      </template>
     </lazy-base-navigation-drawer>
     <v-main>
       <nuxt v-if="$route.name === 'level-program-specialization'" />
