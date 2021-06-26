@@ -47,6 +47,9 @@ export default class Graph {
   mouseleft = true
   initialScale = 0
   transitionLinks = false
+  defaultForceXYStrength = 0.07
+  defaultForceChargeStrength = -200
+  defaultForceLinkDistance = 70
 
   constructor(vue) {
     // We want access to the vue component
@@ -114,10 +117,6 @@ export default class Graph {
       viewBoxWidth,
       viewBoxHeight,
     ]
-
-    this.defaultForceXYStrength = 0.07
-    this.defaultForceChargeStrength = -200
-    this.defaultForceLinkDistance = 70
 
     this.simulation = forceSimulation()
       .force(
@@ -507,7 +506,6 @@ export default class Graph {
   dragstarted(element, event, d) {
     this.isDragging = true
     if (!event.active) {
-      // I don't know what this does, I just copied it
       this.simulation.alphaTarget(0.3).restart()
     }
 
@@ -529,7 +527,6 @@ export default class Graph {
   dragended(element, event, d) {
     this.isDragging = false
     if (!event.active) {
-      // I don't know what this does, I just copied it
       this.simulation.alphaTarget(0)
     }
     d.fx = null
@@ -570,9 +567,7 @@ export default class Graph {
 
   renderVoronoi() {
     const voronoi = this.createVoronoi()
-    this.voronoiCell = this.voronoiCell.attr('d', (d, i) =>
-      voronoi.renderCell(i)
-    )
+    this.voronoiCell.attr('d', (d, i) => voronoi.renderCell(i))
   }
 
   voronoiColor(nodeGroup, d) {
@@ -688,6 +683,8 @@ export default class Graph {
     let linkSelection = this.link
     if (this.transitionLinks) {
       linkSelection = linkSelection.transition(getTransition())
+      // ticked() called only once since alpha === 0
+      this.transitionLinks = false
     }
     linkSelection
       .attr('x1', this.linkX1.bind(this))
@@ -698,7 +695,7 @@ export default class Graph {
 
     if (this.vue.isDirectedGraph) {
       // only check collisions if graph is directed
-      this.link.style('marker-end', (d, i, group) => {
+      this.link.style('markerend', (d, i, group) => {
         const collision = this.didNodesCollide(d)
         if (collision) {
           // remove stroke of link on collision
@@ -908,13 +905,13 @@ export default class Graph {
 
   restartSimulation(alpha) {
     const currentAlpha = this.simulation.alpha()
-
     this.transitionLinks = false
-    if (alpha === 0 && currentAlpha < 0.02) {
-      // if alpha === 0 and the simulation has almost cooled down
+    if (alpha === 0 && currentAlpha < 0.04) {
+      // if alpha === 0 and the simulation has (nearly) cooled down
       // we want to restart without reheating the simulation
       // --> apply a smooth transition to the links
       this.transitionLinks = true
+      // restart() calls tick() once when alpha === 0
       this.simulation.alpha(alpha).restart()
     } else if (alpha > 0) {
       // else if alpha > 0, restart the simulation without links transition
@@ -933,9 +930,9 @@ export default class Graph {
     this.renderNodes(nodes)
     const { nodeGroup } = this.vue.controls
 
+    this.resetVoronoiGrouping(nodeGroup)
     this.resetSimulation(nodes, links, nodeGroup)
     this.restartSimulation(alpha)
-    this.resetVoronoiGrouping(nodeGroup)
 
     // Set initial scale depending on the number of nodes in the graph
     // + 2 to avoid division by zero in case
