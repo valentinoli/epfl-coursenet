@@ -37,7 +37,7 @@
     "debounce-async": "0.0.2",
     "js-cookie": "^2.2.1",
     "lodash.debounce": "^4.0.8",
-    "nuxt": "^2.14.12",
+    "nuxt": "^3.4.3",
     "vuex-persistedstate": "^4.0.0-beta.3"
   },
   "devDependencies": {
